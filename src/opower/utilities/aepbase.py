@@ -124,14 +124,15 @@ class AEPBase(ABC):
             text = await resp.text()
             login_parser.feed(text)
 
-
         if not login_parser.password_field_found:
             match = re.search(r"https://([^.]*).opower.com", text)
             assert match
             cls._subdomain = match.group(1)
 
-            # Assume we are already logged in
-            return
+            login_parser.inputs = cls._login_inputs
+            login_parser.password_field_found = True
+        else:
+            cls._login_inputs = dict(login_parser.inputs)
 
         # Post the login page with the user credentials and get the cookieKey
         async with session.post(
