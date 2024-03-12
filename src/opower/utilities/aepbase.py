@@ -129,8 +129,10 @@ class AEPBase(ABC):
             assert match
             cls._subdomain = match.group(1)
 
-            # Assume we are already logged in
-            return
+            login_parser.inputs = cls._login_inputs
+            login_parser.password_field_found = True
+        else:
+            cls._login_inputs = dict(login_parser.inputs)
 
         # Post the login page with the user credentials and get the cookieKey
         async with session.post(
